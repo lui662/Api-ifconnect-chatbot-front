@@ -1,3 +1,5 @@
+let nomeUsuario = ""; 
+
 function setStatusDesabilitado(elemento, desabilitado) {
     elemento.disabled = desabilitado
     elemento.style.backgroundColor = desabilitado ? "#696969" : ""
@@ -5,6 +7,7 @@ function setStatusDesabilitado(elemento, desabilitado) {
 }
 
 function receberMensagem() {
+    const nomeUsuario = prompt("Bem-vindo! Para começarmos, qual é o seu nome?") || "Visitante_" + Math.floor(Math.random() * 1000);
 
     let mensagemDoUsuario = document.getElementById("inputStyle")
     let carregando = document.getElementById("div-carregando")
@@ -28,7 +31,7 @@ function receberMensagem() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            usuario: "usuario",
+            usuario: nomeUsuario,
             mensagem: mensagemDoUsuario.value
         })
     })
@@ -85,8 +88,8 @@ function mostrarMensagem(pergunta, resposta) {
 }
 
 function apagarHistorico() {
-
-    fetch('https://api-ifconnect-chatbot-production.up.railway.app/historico/usuario', {
+    if (!nomeUsuario) return alert("Nenhum usuario cadastrado")
+    fetch(`https://api-ifconnect-chatbot-production.up.railway.app/historico/${nomeUsuario}`, {
         method: 'DELETE',
     })
         .then(response => {
