@@ -7,7 +7,10 @@ function setStatusDesabilitado(elemento, desabilitado) {
 }
 
 function receberMensagem() {
-    const nomeUsuario = prompt("Bem-vindo! Para começarmos, qual é o seu nome?") || "Visitante_" + Math.floor(Math.random() * 1000);
+    
+    if (!nomeUsuario) {
+        nomeUsuario = prompt("Bem-vindo! Para começarmos, qual é o seu nome?") || "Visitante_" + Math.floor(Math.random() * 1000);
+    }
 
     let mensagemDoUsuario = document.getElementById("inputStyle")
     let carregando = document.getElementById("div-carregando")
