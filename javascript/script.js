@@ -91,20 +91,26 @@ function mostrarMensagem(pergunta, resposta) {
 }
 
 function apagarHistorico() {
-    if (!nomeUsuario) return alert("Nenhum usuario cadastrado")
-    fetch(`https://api-ifconnect-chatbot-production.up.railway.app/historico/${nomeUsuario}`, {
+    if (!nomeUsuario) return alert("Nenhum usuário cadastrado");
+
+    fetch(`https://api-ifconnect-chatbot-production.up.railway.app/historico/${encodeURIComponent(nomeUsuario)}`, {
         method: 'DELETE',
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            alert("Historico excluido com sucesso")
-            document.getElementById("historico").innerHTML = ""
-        })
-        .catch(error => {
-            console.log("error: ", error);
-            alert("Ocorreu um erro ao excluir o historico. Volte mais tarde!");
-        })
+    .then(response => {
+        if (response.status === 404) {
+            alert("Não havia histórico para apagar.");
+            return;
+        }
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        alert("Histórico excluído com sucesso");
+        document.getElementById("historico").innerHTML = "";
+    })
+    .catch(error => {
+        console.log("error: ", error);
+        alert("Ocorreu um erro ao excluir o histórico.");
+    });
 }
