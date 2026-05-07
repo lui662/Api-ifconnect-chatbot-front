@@ -1,116 +1,151 @@
-let nomeUsuario = ""; 
+import api from "./api.js";
+import DOMPurify from "https://cdn.jsdelivr.net/npm/dompurify@3.0.8/+esm";
 
-function setStatusDesabilitado(elemento, desabilitado) {
-    elemento.disabled = desabilitado
-    elemento.style.backgroundColor = desabilitado ? "#696969" : ""
-    elemento.style.cursor = desabilitado ? "not-allowed" : "auto"
+const state = {
+    nomeUsuario: ""
+};
+
+const DOM = {
+    inputField: document.getElementById("inputStyle"),
+    btnEnviar: document.getElementById("btn-enviar"),
+    btnApagar: document.getElementById("btn-apagar"),
+    historico: document.getElementById("historico"),
+    divCarregando: document.getElementById("div-carregando"),
+    btnSubir: document.getElementById("btn-cima"),
+    btnDescer: document.getElementById("btn-baixo"),
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    DOM.inputField?.addEventListener("keypress", (event) => {
+        if (event.key === "Enter" && !DOM.inputField.disabled) {
+            event.preventDefault(); 
+            receberMensagem();
+        }
+    });
+
+    DOM.btnEnviar?.addEventListener("click", (event) => {
+        event.preventDefault();
+        receberMensagem();
+    });
+
+    DOM.btnApagar?.addEventListener("click", (event) => {
+        event.preventDefault();
+        apagarHistorico();
+    });
+});
+
+function alternarEstadoCarregando(carregando) {
+    const elementos = [DOM.inputField, DOM.btnEnviar];
+    
+    elementos.forEach(el => {
+        if (!el) return;
+        el.disabled = carregando;
+        el.style.backgroundColor = carregando ? "#696969" : "";
+        el.style.cursor = carregando ? "not-allowed" : "pointer";
+    });
+
+    if (DOM.divCarregando) {
+        DOM.divCarregando.style.display = carregando ? "flex" : "none";
+    }
 }
 
-function receberMensagem() {
+function descerTotal() {
+    if (DOM.historico) {
+        DOM.historico.scrollTo({ top: DOM.historico.scrollHeight, behavior: 'smooth' });
+    }
+}
+
+function subirTotal() {
+    if (DOM.historico) {
+        DOM.historico.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+function rolarParaBaixo() {
+    if (DOM.historico) {
+        DOM.historico.scrollTop = DOM.historico.scrollHeight;
+    }
+}
+
+function exibirErroCampoVazio() {
+    DOM.inputField.placeholder = "O campo está vazio!";
+    DOM.inputField.style.border = "2px solid var(--danger)";
     
-    if (!nomeUsuario) {
-        nomeUsuario = prompt("Bem-vindo! Para começarmos, qual é o seu nome?") || "Visitante_" + Math.floor(Math.random() * 1000);
+    setTimeout(() => {
+        DOM.inputField.style.border = "none";
+        DOM.inputField.placeholder = "Digite sua dúvida aqui...";
+    }, 2000); 
+}
+
+async function receberMensagem() {
+    if (!state.nomeUsuario) {
+        state.nomeUsuario = prompt("Bem-vindo! Para começarmos, qual é o seu nome?") || `Visitante_${Math.floor(Math.random() * 1000)}`;
     }
 
-    let mensagemDoUsuario = document.getElementById("inputStyle")
-    let carregando = document.getElementById("div-carregando")
-    let botao = document.getElementById("btn-enviar")
+    const textoMensagem = DOM.inputField.value.trim();
 
-    if (!mensagemDoUsuario.value) {
-        mensagemDoUsuario.placeholder = "O campo está vazio!"
-        mensagemDoUsuario.style.border = "1px solid red"
-        return
+    if (!textoMensagem) {
+        return exibirErroCampoVazio(); 
     }
 
-    mensagemDoUsuario.style.border = "none"
-    carregando.innerHTML = `<img src="../img/carregando.gif" alt="carregando" id="carregando-img">`
+    DOM.inputField.style.border = "none";
+    alternarEstadoCarregando(true);
 
-    setStatusDesabilitado(mensagemDoUsuario, true)
-    setStatusDesabilitado(botao, true)
-
-    fetch('https://api-ifconnect-chatbot-production.up.railway.app/gerar-resposta', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            usuario: nomeUsuario,
-            mensagem: mensagemDoUsuario.value
-        })
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            mostrarMensagem(mensagemDoUsuario.value, data.resposta);
-            mensagemDoUsuario.value = "";
-        })
-        .catch(error => {
-            console.log("error: ", error);
-            alert("Ocorreu um erro ao enviar sua mensagem. Volte mais tarde!");
-        })
-        .finally(() => {
-            setStatusDesabilitado(mensagemDoUsuario, false);
-            setStatusDesabilitado(botao, false);
-            carregando.innerHTML = "";
+    try {
+        const response = await api.post('/gerar-resposta', {
+            usuario: state.nomeUsuario,
+            mensagem: textoMensagem
         });
-
+        
+        mostrarMensagem(textoMensagem, response.data.resposta.resposta); 
+        DOM.inputField.value = "";
+    } catch (error) {
+        console.error("Erro na requisição: ", error);
+        mostrarMensagem(textoMensagem, "Desculpe, ocorreu um erro ao enviar sua mensagem. Tente novamente mais tarde!");
+        DOM.inputField.value = "";
+    } finally {
+        alternarEstadoCarregando(false);
+        DOM.inputField.focus(); 
+    }
 }
 
 function mostrarMensagem(pergunta, resposta) {
 
-    let historico = document.getElementById("historico")
+    const boxMinhasMensagem = document.createElement("div");
+    boxMinhasMensagem.className = "box-minhas-mensagem";
+    const minhaMensagem = document.createElement("div"); 
+    minhaMensagem.className = "minha-mensagem";
+    minhaMensagem.textContent = pergunta;
+    boxMinhasMensagem.appendChild(minhaMensagem);
+    DOM.historico.appendChild(boxMinhasMensagem);
 
-    resposta = marked.parse(resposta);
 
-    //mensagem do usuario
-    let boxMinhasMensagem = document.createElement("div")
-    boxMinhasMensagem.className = "box-minhas-mensagem"
+    const respostaFormatada = marked.parse(resposta);
+    const boxRespostaDoChat = document.createElement("div");
+    boxRespostaDoChat.className = "box-resposta-do-chat";
+    const respostaMensagem = document.createElement("div");
+    respostaMensagem.className = "resposta-mensagem";
+    respostaMensagem.innerHTML = DOMPurify.sanitize(respostaFormatada);
+    boxRespostaDoChat.appendChild(respostaMensagem);
+    DOM.historico.appendChild(boxRespostaDoChat);
 
-    let minhaMensagem = document.createElement("p")
-    minhaMensagem.className = "minha-mensagem"
-    minhaMensagem.innerHTML = pergunta
-
-    boxMinhasMensagem.appendChild(minhaMensagem)
-    historico.appendChild(boxMinhasMensagem)
-
-    //mensagem do chat
-    let boxRespostaDoChat = document.createElement("div")
-    boxRespostaDoChat.className = "box-resposta-do-chat"
-
-    let respostaMensagem = document.createElement("p")
-    respostaMensagem.className = "resposta-mensagem"
-    respostaMensagem.innerHTML = resposta
-
-    boxRespostaDoChat.appendChild(respostaMensagem)
-    historico.appendChild(boxRespostaDoChat)
-
+    requestAnimationFrame(rolarParaBaixo);
 }
 
-function apagarHistorico() {
-    if (!nomeUsuario) return alert("Nenhum usuário cadastrado");
+async function apagarHistorico() {
+    if (!state.nomeUsuario) return alert("Nenhum usuário cadastrado.");
+    if (!confirm("Tem certeza que deseja apagar todo o histórico de conversas?")) return;
 
-    fetch(`https://api-ifconnect-chatbot-production.up.railway.app/historico/${encodeURIComponent(nomeUsuario)}`, {
-        method: 'DELETE',
-    })
-    .then(response => {
-        if (response.status === 404) {
+    try {
+        await api.delete(`/historico/${encodeURIComponent(state.nomeUsuario)}`);
+        DOM.historico.innerHTML = ""; 
+        alert("Histórico excluído com sucesso!");
+    } catch (error) {
+        if (error.response?.status === 404) {
             alert("Não havia histórico para apagar.");
-            return;
+        } else {
+            console.error("Erro ao excluir: ", error);
+            alert("Ocorreu um erro ao excluir o histórico.");
         }
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        alert("Histórico excluído com sucesso");
-        document.getElementById("historico").innerHTML = "";
-    })
-    .catch(error => {
-        console.log("error: ", error);
-        alert("Ocorreu um erro ao excluir o histórico.");
-    });
+    }
 }

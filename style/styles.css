@@ -1,192 +1,253 @@
+/* RESET BÁSICO */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 :root {
     --green: #0a5517;
-    --white: #FFFF;
+    --green-dark: #073a0f;
     --green2: #98FB98;
-    --lima: #00FF00;
-    --black: #000
-
+    --lima-suave: #66cc66; /* Substitui o limão agressivo */
+    --white: #FFFFFF;
+    --gray-light: #e0e0e0;
+    --black: #333333; /* Cinza escuro é melhor que preto puro para leitura */
+    --danger: #d9534f; /* Vermelho mais profissional */
+    --danger-hover: #c9302c;
 }
 
+/* LAYOUT PRINCIPAL (FLEXBOX) */
 body {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh; /* Ocupa 100% da tela exatamente */
+    height: 100dvh; /* Melhor para mobile */
     background-image: url("../img/background.png");
+    background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden; /* Trava o scroll no body, deixa apenas no main */
 }
 
-@media screen and (max-width: 1034px) {
-    body{
-        background-size: 100%;
-    }
+/* NAVEGAÇÃO (HEADER) */
+nav {
+    background-color: var(--green);
+    flex-shrink: 0; /* Impede o nav de encolher */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 10;
 }
 
-.bordaDaDiv {
+.nav-container {
     display: flex;
-    background-color: var(--green);
-    padding: 0.625rem;
-    width: 100%;
-    height: 6.25rem;
+    padding: 0.8rem 2rem;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-img{
-    width: 10.625rem;
-    height: auto;
+.logo {
+    height: 60px; /* Define altura fixa para a logo não quebrar o layout */
+    width: auto;
 }
 
-nav{
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-}
-
-main {
-    position: absolute;
-    top: 6.25rem; /* mesma altura da nav */
-    bottom: 6.90rem; /* altura do footer + margem */
-    width: 100%;
-    overflow-y: auto;
-    padding: 10px;
-}
-
-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    z-index: 1000;
-
-    padding: 1rem;
-    background-color: var(--green);
-    border-top-left-radius: 30px;
-    border-top-right-radius: 30px;
-}
-
-#inputStyle{
-    padding: 0.625rem;
-    border-radius: 8px;
-    width: 90%;
+/* BOTÕES DE AÇÃO */
+.btn-danger {
+    padding: 0.5rem 1rem;
+    background-color: var(--danger);
+    color: var(--white);
     border: none;
-    background-color: var(--white);
-    outline: none;
-    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s;
 }
-.buttonStyle{
-    padding: 0.625rem;
+
+.btn-danger:hover {
+    background-color: var(--danger-hover);
+}
+
+.buttonStyle {
+    padding: 0.8rem 1.5rem;
     background-color: var(--green2);
-    color: var(--black);
+    color: var(--green-dark);
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    font-weight: bold;
     font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
 }
 
-.buttonStyle:hover{
-    background-color: var(--lima);
-    transition: 300ms;
-    cursor: pointer;
+.buttonStyle:hover {
+    background-color: var(--lima-suave);
+    color: var(--white);
+}
+
+/* ÁREA CENTRAL DO CHAT (MAIN) */
+main {
+    flex-grow: 1; /* Ocupa todo o espaço que sobrar entre nav e footer */
+    overflow-y: auto; /* Scroll apenas aqui dentro */
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Scrollbar personalizada para o Main */
+main::-webkit-scrollbar {
+    width: 8px;
+}
+main::-webkit-scrollbar-track {
+    background: transparent;
+}
+main::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+}
+
+/* HISTÓRICO DE MENSAGENS */
+#historico {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 900px; /* Centraliza o chat em telas grandes */
+    margin: 0 auto;
+}
+
+/* BALÕES DE MENSAGEM */
+.box-minhas-mensagem {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.minha-mensagem {
+    background-color: var(--green);
+    color: var(--white);
+    padding: 12px 18px;
+    border-radius: 20px 20px 0px 20px; /* Bico inferior direito */
+    max-width: 75%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    line-height: 1.4;
+}
+
+.box-resposta-do-chat {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.resposta-mensagem {
+    background-color: var(--gray-light);
+    color: var(--black);
+    padding: 12px 18px;
+    border-radius: 20px 20px 20px 0px; /* Bico inferior esquerdo */
+    max-width: 75%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    line-height: 1.5;
+}
+
+/* Correção para o Markdown nas respostas do bot */
+.resposta-mensagem p { margin-bottom: 8px; }
+.resposta-mensagem p:last-child { margin-bottom: 0; }
+
+.resposta-mensagem ul, 
+.resposta-mensagem ol {
+    padding-left: 20px; /* Permite que os bullets fiquem visíveis */
+    margin-bottom: 10px;
+}
+
+/* FOOTER / INPUT */
+footer {
+    flex-shrink: 0;
+    background-color: var(--green);
+    padding: 1rem 2rem;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
 }
 
 #footStyle {
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    margin-top: 10px;
+    gap: 15px;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
-#styleCopy{
+#inputStyle {
+    flex-grow: 1; /* O input cresce para ocupar o espaço */
+    padding: 1rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#styleCopy {
     text-align: center;
     margin-top: 10px;
     color: var(--white);
+    font-size: 0.8rem;
+    opacity: 0.8;
 }
 
-@media screen and (max-width: 1034px) {
-    #footStyle{
-         gap: 10px;
-    }
-}
+/* ANIMAÇÃO DE CARREGAMENTO */
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.girar { display: inline-block; animation: spin 1s linear infinite; }
 
-#div-carregando{
-    margin-top: 10px;
+#div-carregando {
     display: flex;
     justify-content: center;
-    align-items: center;
+    margin-bottom: 15px;
 }
 
-#carregando-img{
-    width: 60px;
-    height: auto;
+.btn-scroll {
+    position: fixed;
+    right: 20px;
+    background-color: var(--lima-suave);
+    color: var(--green-dark);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 25px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    opacity: 0.7;
+    transition: opacity 0.3s;
+    z-index: 1000;
 }
 
-/* No seu arquivo ../style/styles.css */
-
-/* Estilos para o contêiner do histórico (se precisar) */
-#historico {
-    flex: 1; /* Permite que o histórico ocupe o espaço disponível */
-    padding: 10px;
-    overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
-    display: flex; /* Para alinhar as mensagens em coluna */
-    flex-direction: column;
-    gap: 15px; /* Espaçamento entre as mensagens */
-    padding-bottom: 20px; /* Para não ficar colado no footer */
+.btn-scroll:hover{
+    background-color: var(--green-dark);
+    color: var(--green2);
+    transition: 300ms;
 }
 
-/* Estilos para a caixa da minha mensagem */
-.box-minhas-mensagem {
-    display: flex;
-    justify-content: flex-end; /* Alinha a mensagem do usuário à direita */
-    max-width: 80%; /* Limita a largura da caixa de mensagem */
-    align-self: flex-end; /* Garante que a caixa fique à direita no flex container */
+#btn-cima {
+    bottom: 235px;
 }
 
-.minha-mensagem {
-    background-color: var(--green); /* Cor de fundo da sua mensagem */
-    color: var(--white); /* Cor do texto da sua mensagem */
-    padding: 10px 15px;
-    border-radius: 20px 20px 5px 20px; /* Bordas arredondadas (top-left top-right bottom-right bottom-left) */
-    word-wrap: break-word; /* Quebra palavras longas */
-    max-width: 100%; /* Garante que o texto não exceda a caixa */
+#btn-baixo {
+    bottom: 190px;
 }
 
-/* Estilos para a caixa de resposta do chat */
-.box-resposta-do-chat {
-    display: flex;
-    justify-content: flex-start; /* Alinha a mensagem do bot à esquerda */
-    max-width: 80%; /* Limita a largura da caixa de mensagem */
-    align-self: flex-start; /* Garante que a caixa fique à esquerda no flex container */
-}
-
-.resposta-mensagem {
-    background-color: #e0e0e0; /* Cor de fundo da mensagem do bot */
-    color: var(--black); /* Cor do texto da mensagem do bot */
-    padding: 10px 15px;
-    border-radius: 20px 20px 20px 5px; /* Bordas arredondadas */
-    word-wrap: break-word;
-    max-width: 100%;
-    text-align: justify;
-}
-
-.resposta-mensagem ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-}
-
-.resposta-mensagem ol {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-}
-
-.minha-mensagem, .resposta-mensagem {
-    white-space: pre-line;
+/* RESPONSIVIDADE */
+@media screen and (max-width: 768px) {
+    .nav-container { padding: 0.8rem 1rem; }
+    .logo { height: 45px; }
+    
+    .minha-mensagem, .resposta-mensagem { max-width: 90%; }
+    
+    footer { padding: 1rem; }
+    #footStyle { flex-direction: column; }
+    .buttonStyle { width: 100%; justify-content: center; }
 }
