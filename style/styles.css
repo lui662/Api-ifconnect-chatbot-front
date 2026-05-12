@@ -232,14 +232,6 @@ footer {
     transition: 300ms;
 }
 
-#btn-cima {
-    bottom: 235px;
-}
-
-#btn-baixo {
-    bottom: 190px;
-}
-
 /* RESPONSIVIDADE */
 @media screen and (max-width: 768px) {
     .nav-container { padding: 0.8rem 1rem; }

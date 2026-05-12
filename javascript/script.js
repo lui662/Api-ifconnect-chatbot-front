@@ -49,18 +49,6 @@ function alternarEstadoCarregando(carregando) {
     }
 }
 
-function descerTotal() {
-    if (DOM.historico) {
-        DOM.historico.scrollTo({ top: DOM.historico.scrollHeight, behavior: 'smooth' });
-    }
-}
-
-function subirTotal() {
-    if (DOM.historico) {
-        DOM.historico.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-}
-
 function rolarParaBaixo() {
     if (DOM.historico) {
         DOM.historico.scrollTop = DOM.historico.scrollHeight;
